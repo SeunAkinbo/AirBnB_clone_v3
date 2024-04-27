@@ -64,23 +64,24 @@ class FileStorage:
             key = obj.__class__.__name__ + '.' + obj.id
             if key in self.__objects:
                 del self.__objects[key]
-    
+
     def get(self, cls, id):
         """Retrives one object
         Args:
-            id (_type_): _description_
+            id (uuid4): The class object identifier
         """
         if cls and id:
-            if cls in classes.values() and isinstance(id, str):
+            if cls in classes.values():
                 class_obj = self.all(cls)
-                for key, value in class_obj.items():
-                    if key.split(".")[1] == id:
-                        return value
-            else:
-                return
+                for item in class_obj.values():
+                    if item.id == id:
+                        return item
+            return
         return
 
-    def count(self, cls=None):
+    def count(self, cls):
+        """Counts object occurrances
+        """
         if cls:
             if cls in classes.values():
                 return len(self.all(cls))

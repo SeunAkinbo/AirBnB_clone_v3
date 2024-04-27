@@ -52,6 +52,50 @@ test_file_storage.py'])
         self.assertTrue(len(file_storage.__doc__) >= 1,
                         "file_storage.py needs a docstring")
 
+
+class TestFileStorageNew(unittest.TestCase):
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_new_creates_object(self):
+        """Test that new creates an object in __objects"""
+        storage = FileStorage()
+        obj = State()
+        storage.new(obj)
+        self.assertIn(obj.id, storage._FileStorage__objects)
+        
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage") 
+    def test_new_assigns_id(self):
+        """Test that new assigns an id to the object"""
+        storage = FileStorage()
+        obj = State()
+        storage.new(obj)
+        self.assertIsNotNone(obj.id)
+
+class TestFileStorageSave(unittest.TestCase):
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_save_updates_file(self):
+        """Test that save updates the JSON file"""
+        storage = FileStorage()
+        obj = State()
+        storage.new(obj)
+        obj.name = "California"
+        storage.save()
+        with open("file.json", "r") as f:
+            self.assertIn("California", f.read())
+
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_save_new_and_updates(self):
+        """Test save with new object and updating existing""" 
+        storage = FileStorage()
+        obj = State()
+        storage.new(obj)
+        obj.name = "California"
+        obj2 = State()
+        storage.new(obj2)
+        storage.save()
+        with open("file.json", "r") as f:
+            self.assertIn("California", f.read())
+            self.assertIn(obj2.id, f.read())
+
     def test_file_storage_class_docstring(self):
         """Test for the FileStorage class docstring"""
         self.assertIsNot(FileStorage.__doc__, None,
@@ -66,7 +110,6 @@ test_file_storage.py'])
                              "{:s} method needs a docstring".format(func[0]))
             self.assertTrue(len(func[1].__doc__) >= 1,
                             "{:s} method needs a docstring".format(func[0]))
-
 
 class TestFileStorage(unittest.TestCase):
     """Test the FileStorage class"""
