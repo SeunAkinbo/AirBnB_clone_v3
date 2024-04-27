@@ -68,6 +68,8 @@ def create_state():
               otherwise returns a 400 error.
     """
     data = request.get_json()
+    if request.content_type != "application/json":
+        abort(400, "Not a JSON")
     if not data:
         abort(400, "Not a JSON")
     if "name" not in data:
@@ -93,6 +95,8 @@ def update_state(state_id):
     state = storage.get(State, state_id)
     if not state:
         abort(404)
+    if request.content_type != "application/json":
+        return abort(400, "Not a JSON")
     data = request.get_json()
     if not data:
         abort(400, "Not a JSON")
