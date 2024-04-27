@@ -68,7 +68,7 @@ class FileStorage:
     def get(self, cls, id):
         """Retrives one object
         Args:
-            id (_type_): _description_
+            id (uuid4): The class object identifier
         """
         if cls and id:
             if cls in classes.values():
