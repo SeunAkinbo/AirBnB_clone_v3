@@ -78,7 +78,17 @@ class TestDBStorage(unittest.TestCase):
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_all_no_class(self):
         """Test that all returns all rows when no class is passed"""
+<<<<<<< Updated upstream
         pass
+=======
+        new_state = State()
+        new_state.name = "Abuja"
+        models.storage.new(new_state)
+        models.storage.save()
+        session = models.storage._DBStorage__session
+        retrieved_state = self.storages.get(State, new_state.id)
+        self.assertEqual(retrieved_state, new_state)
+>>>>>>> Stashed changes
 
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_new(self):
