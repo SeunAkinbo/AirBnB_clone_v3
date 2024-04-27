@@ -111,9 +111,68 @@ class TestFileStorageSave(unittest.TestCase):
             self.assertTrue(len(func[1].__doc__) >= 1,
                             "{:s} method needs a docstring".format(func[0]))
 
-class TestFileStorage(unittest.TestCase):
-    """Test the FileStorage class"""
+
+class TestFileStorageCount(unittest.TestCase):
+    """Test count method of FileStorage class"""
+
     @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_count_empty(self):
+        """Test count with no objects returns 0"""
+        storage = FileStorage()
+        self.assertEqual(storage.count(), 0)
+
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_count_one_object(self):
+        """Test count with 1 object returns 1"""
+        storage = FileStorage()
+        obj = State()
+        storage.new(obj)
+        self.assertEqual(storage.count(), 1)
+
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_count_multiple_objects(self):
+        """Test count with multiple objects returns correct count"""
+        storage = FileStorage()
+        obj1 = State()
+        obj2 = City()
+        storage.new(obj1)
+        storage.new(obj2)
+        self.assertEqual(storage.count(), 2)
+
+class TestFileStorageGet(unittest.TestCase):
+    """Test get method of FileStorage class"""
+
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_get_valid_id(self):
+        """Test get with valid id returns object"""
+        storage = FileStorage()
+        obj = State()
+        storage.new(obj)
+        self.assertEqual(storage.get(obj.id), obj)
+
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_get_invalid_id(self):
+        """Test get with invalid id returns None"""
+        storage = FileStorage()
+        self.assertIsNone(storage.get("invalid"))
+
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_get_valid_class(self):
+        """Test get with valid class returns object"""
+        storage = FileStorage()
+        obj = State()
+        storage.new(obj)
+        self.assertEqual(storage.get(State, obj.id), obj)
+
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_get_invalid_class(self):
+        """Test get with invalid class returns None"""
+        storage = FileStorage()
+        obj = State()
+        storage.new(obj)
+        self.assertIsNone(storage.get(City, obj.id))
+        self.assertIsNone(storage.get(City, obj.id))
+
     def test_all_returns_dict(self):
         """Test that all returns the FileStorage.__objects attr"""
         storage = FileStorage()
