@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+"""City Module"""
 from api.v1.views import app_views
 from flask import abort, jsonify, make_response, request
 from models import storage
@@ -9,12 +10,12 @@ from models.state import State
 @app_views.route('/states/<state_id>/cities', strict_slashes=False)
 def get_cities(state_id):
     """Retrieves the list of all City objects
-    
+
     Args:
         state_id (str): State object ID
-    
+
     Return:
-        JSON City object, error 404 otherwise 
+        JSON City object, error 404 otherwise
     """
     states = storage.get(State, state_id)
     if not states:
@@ -26,12 +27,12 @@ def get_cities(state_id):
 @app_views.route('/cities/<city_id>', strict_slashes=False)
 def get_city_by_id(city_id):
     """Retrives the City object by its id
-    
+
     Args:
         city_id (str): City object ID
-    
+
     Return:
-        JSON City object, error 404 otherwise 
+        JSON City object, error 404 otherwise
     """
     city = storage.get(City, city_id)
     if city:
@@ -43,7 +44,7 @@ def get_city_by_id(city_id):
                  strict_slashes=False)
 def delete_city(city_id):
     """Delete a City object by its id
-    
+
     Args:
         city_id (str): City object ID
     """
@@ -59,10 +60,10 @@ def delete_city(city_id):
                  strict_slashes=False)
 def create_city(state_id):
     """Create a City object
-    
+
     Args:
         state_id (str): State object ID
-    
+
     Return:
         A new City object with the status code 201
     """
@@ -86,7 +87,7 @@ def create_city(state_id):
                  strict_slashes=False)
 def update_city(city_id):
     """Update a City object
-    
+
     Args:
         city_id (str): City object ID
     """
