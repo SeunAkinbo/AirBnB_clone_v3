@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """State module"""
-from flask import jsonify, request, abort
+from flask import jsonify, request, abort, make_response
 from api.v1.views import app_views
 from models import storage
 from models.state import State
@@ -53,7 +53,7 @@ def delete_state(state_id):
     if state:
         storage.delete(state)
         storage.save()
-        return jsonify({}), 200
+        return make_response(jsonify({}), 200)
     else:
         abort(404)
 
@@ -74,7 +74,7 @@ def create_state():
         abort(400, "Missing name")
     new_state = State(**data)
     new_state.save()
-    return jsonify(new_state.to_dict()), 201
+    return make_response(jsonify(new_state.to_dict()), 201)
 
 
 @app_views.route('/states/<state_id>', methods=['PUT'],
@@ -100,4 +100,4 @@ def update_state(state_id):
         if key not in ['id', 'created_at', 'updated_at']:
             setattr(state, key, value)
     storage.save()
-    return jsonify(state.to_dict()), 200
+    return make_response(jsonify(state.to_dict()), 200)
