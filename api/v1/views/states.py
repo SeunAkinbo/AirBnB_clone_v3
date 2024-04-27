@@ -67,9 +67,9 @@ def create_state():
         JSON: New State object with status code 201 if successful,
               otherwise returns a 400 error.
     """
-    data = request.get_json()
     if request.content_type != "application/json":
         abort(400, "Not a JSON")
+    data = request.get_json()
     if not data:
         abort(400, "Not a JSON")
     if "name" not in data:
