@@ -14,7 +14,7 @@ def get_users():
     Returns:
         JSON: A list of all User objects.
     """
-    users = [user.to_dict() for user in storage.all(User)]
+    users = [user.to_dict() for user in storage.all(User).values()]
     return jsonify(users)
 
 
@@ -103,4 +103,5 @@ def update_user(user_id):
     for key, value in data.items():
         if key not in ['id', 'email', 'created_at', 'updated_at']:
             setattr(user, key, value)
+    user.save()
     return make_response(jsonify(user.to_dict()), 200)
