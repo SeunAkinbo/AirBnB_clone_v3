@@ -27,24 +27,7 @@ class User(BaseModel, Base):
 
     def __init__(self, *args, **kwargs):
         """initializes user"""
+        if kwargs and 'password' in kwargs:
+            kwargs['password'] = md5.update(kwargs['password'].encode('utf-8')).hexdigest() 
         super().__init__(*args, **kwargs)
 
-    @property
-    def password(self):
-        """
-        gets the password from the __disct__
-
-        Return:
-            Hashed Password
-        """
-        return self.__dict__.get("password")
-
-    @password.setter
-    def password(self, value):
-        """
-        Sets the password attribute to a hashed password
-
-        Args:
-            value (str): The password provided by the user
-        """
-        self.__dict__["password"] = md5(value.encode('utf-8')).hexdigest()
