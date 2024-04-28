@@ -16,8 +16,6 @@ def get_amenities():
     """
     amenities = [amenity.to_dict() for amenity in
                  storage.all(Amenity).values()]
-    if not amenities:
-        abort(404)
     return jsonify(amenities)
 
 
