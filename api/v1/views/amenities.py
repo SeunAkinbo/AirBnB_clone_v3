@@ -14,14 +14,15 @@ def get_amenities():
     Returns:
         JSON: A list of all Amenity objects.
     """
-    amenities = [amenity.to_dict() for amenity in storage.all(Amenity).values()]
+    amenities = [amenity.to_dict() for amenity in
+                 storage.all(Amenity).values()]
     if not amenities:
         abort(404)
     return jsonify(amenities)
 
 
 @app_views.route('/amenities/<amenity_id>', strict_slashes=False)
-def  get_amenity_by_id(amenity_id):
+def get_amenity_by_id(amenity_id):
     """
     Retrieves an Amenity object by id.
 
