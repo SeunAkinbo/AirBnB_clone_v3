@@ -6,7 +6,7 @@ from os import getenv
 import sqlalchemy
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
-import hashlib
+from hashlib import md5
 
 
 class User(BaseModel, Base):
@@ -27,11 +27,24 @@ class User(BaseModel, Base):
 
     def __init__(self, *args, **kwargs):
         """initializes user"""
-        if kwargs:
-            pwd = kwargs.pop('password', None)
-            if pwd:
-                hashes = hashlib.md5()
-                hashes.update(pwd.encode('utf8'))
-                hashed_pwd = hashes.hexdigest()
-                kwargs['password'] = hashed_pwd
         super().__init__(*args, **kwargs)
+    
+    @property
+    def password(self):
+        """
+        gets the password from the __disct__
+
+        Return:
+            Hashed Password
+        """
+        return self.__dict__.get("password")
+
+    @password.setter
+    def password(self, value):
+        """
+        Sets the password attribute to a hashed password
+
+        Args:
+            value (str): The password provided by the user
+        """
+        self.__dict__["password"] = md5(value.encode('utf-8')).hexdigest()
