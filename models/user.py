@@ -29,6 +29,8 @@ class User(BaseModel, Base):
         """initializes user"""
         if kwargs and 'password' in kwargs:
             password = kwargs.pop("password")
-            pwd = md5.update(password.encode('utf-8')).hexdigest()
-            kwargs['password'] = pwd
+            hasher = md5()
+            hasher.update(password.encode('utf-8'))
+            hashed_password = hasher.hexdigest()
+            kwargs['password'] = hashed_password
         super().__init__(*args, **kwargs)
