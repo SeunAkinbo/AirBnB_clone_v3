@@ -91,10 +91,10 @@ def update_amenity(amenity_id):
         JSON: The updated Amenity object
     """
     amenity = storage.get(Amenity, amenity_id)
-    if request.content_type != "application/json":
-        abort(400, "Not a JSON")
     if not amenity:
         abort(404)
+    if request.content_type != "application/json":
+        abort(400, "Not a JSON")
     data = request.get_json()
     if not data:
         abort(400, "Not a JSON")
