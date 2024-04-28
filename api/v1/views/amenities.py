@@ -66,7 +66,6 @@ def create_amenity():
     Return:
         A new City object with the status code 201
     """
-    amenities = storage.all(Amenity)
     if request.content_type != "application/json":
         abort(400, "Not a JSON")
     data = request.get_json()
