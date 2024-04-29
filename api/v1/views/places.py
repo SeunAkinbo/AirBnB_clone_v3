@@ -160,6 +160,12 @@ def search_places():
                 filtered_places.append(place)
         places_list = filtered_places
 
-    places_json = [place.to_dict() for place in places_list]
+    result = [storage.get(Place, place.id).to_dict() for place in result]
 
-    return jsonify(places_json)
+    keys_to_remove = ["amenities", "reviews", "amenity_ids"]
+    result = [
+        {key: value for key, value in place_dict.items() if key not in keys_to_remove}
+        for place_dict in result
+    ]
+
+    return jsonify(result)
