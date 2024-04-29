@@ -122,47 +122,49 @@ def search_places():
     """Searches Place objects by filters
 
     Returns:
-        JSON: List of Place objects matching filters, or error 400 if filters missing
+        JSON: List of Place objects matching filters, or error 40
     """
     if request.content_type != "application/json":
         abort(400, "Not a JSON")
-    
+
     data = request.get_json()
     if not data:
         places = storage.all(Place).values()
         return jsonify([place.to_dict() for place in places])
-    
+
     states = data.get('states', [])
     cities = data.get('cities', [])
     amenities = data.get('amenities', [])
-    
+
     if not any([states, cities, amenities]):
         places = storage.all(Place).values()
         return jsonify([place.to_dict() for place in places])
-    
+
     place_ids = set()
-    
+
     for state_id in states:
         state = storage.get(State, state_id)
         if state:
             for city in state.cities:
                 for place in city.places:
                     place_ids.add(place.id)
-    
+
     for city_id in cities:
         city = storage.get(City, city_id)
         if city:
             for place in city.places:
                 place_ids.add(place.id)
-    
+
     if amenities:
         amenities_set = set(amenities)
         for place_id in list(place_ids):
             place = storage.get(Place, place_id)
             if place:
-                place_amenities = {amenity.id for amenity in place.amenities}
+                place_amenities = {amenity.id for amenity
+                                   in place.amenities}
                 if not amenities_set.issubset(place_amenities):
                     place_ids.remove(place_id)
-    
-    places = [storage.get(Place, place_id).to_dict() for place_id in place_ids]
+
+    places = [storage.get(Place, place_id).to_dict() for place_id
+              in place_ids]
     return jsonify(places)
