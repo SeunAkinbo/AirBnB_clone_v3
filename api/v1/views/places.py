@@ -141,6 +141,7 @@ def search_places():
         return jsonify([place.to_dict() for place in places])
 
     places_list = []
+
     for state_id in states:
         state = storage.get(State, state_id)
         if state:
@@ -149,7 +150,7 @@ def search_places():
 
     for city_id in cities:
         city = storage.get(City, city_id)
-        if city and city not in places_list:
+        if city:
             places_list.extend(city.places)
 
     if amenities:
@@ -160,6 +161,6 @@ def search_places():
                 filtered_places.append(place)
         places_list = filtered_places
 
-    places_list = list(set(places_list))
+    places_json = [place.to_dict() for place in places_list]
 
-    return jsonify([place.to_dict() for place in places_list])
+    return jsonify(places_json)
