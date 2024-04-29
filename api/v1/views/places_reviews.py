@@ -1,10 +1,11 @@
 #!/usr/bin/python3
-"""Review Module"""
+"""Places Reviews Module"""
+from api.v1.views import app_views
 from flask import abort, jsonify, make_response, request
 from models import storage
 from models.place import Place
 from models.review import Review
-from api.v1.views import app_views
+from models.user import User
 
 
 @app_views.route('/places/<place_id>/reviews', methods=['GET'],
@@ -37,9 +38,9 @@ def get_review_by_id(review_id):
         JSON Review object, error 404 otherwise
     """
     review = storage.get(Review, review_id)
-    if not review:
-        abort(404)
-    return jsonify(review.to_dict())
+    if review:
+        return jsonify(review.to_dict())
+    abort(404)
 
 
 @app_views.route('/reviews/<review_id>', methods=['DELETE'],
@@ -107,8 +108,10 @@ def update_review(review_id):
     data = request.get_json()
     if not data:
         abort(400, "Not a JSON")
+    keys_to_ignore = ['id', 'user_id', 'place_id', 'created_at',
+                      'updated_at']
     for key, value in data.items():
-        if key not in ['id', 'user_id', 'place_id', 'created_at', 'updated_at']:
+        if key not in keys_to_ignore:
             setattr(review, key, value)
     review.save()
     return make_response(jsonify(review.to_dict()), 200)
