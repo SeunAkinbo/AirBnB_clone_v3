@@ -121,7 +121,7 @@ def update_place(place_id):
                  strict_slashes=False)
 def search_places():
     """Searches Place objects by filters
-    
+
     Return:
         JSON: list of Place objects matching filters,
         error 400 if filters missing
@@ -153,7 +153,7 @@ def search_places():
     if amenities and not places_list:
         all_places = storage.all(Place).values()
         amenities_obj = [storage.get(Amenity, amenity_id)
-                            for amenity_id in amenities]
+                         for amenity_id in amenities]
         places_list.extend([place for place in all_places
                             if all(amenity in place.amenities
                                    for amenity in amenities_obj)])
