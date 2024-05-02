@@ -110,34 +110,6 @@ class TestBaseModel(unittest.TestCase):
                                  '-[0-9a-f]{12}$')
         self.assertNotEqual(inst1.id, inst2.id)
 
-    def test_to_dict(self):
-        """Test conversion of object attributes to dictionary for json"""
-        my_model = BaseModel()
-        my_model.name = "Holberton"
-        my_model.my_number = 89
-        d = my_model.to_dict()
-        expected_attrs = ["id",
-                          "created_at",
-                          "updated_at",
-                          "name",
-                          "my_number",
-                          "__class__"]
-        self.assertCountEqual(d.keys(), expected_attrs)
-        self.assertEqual(d['__class__'], 'BaseModel')
-        self.assertEqual(d['name'], "Holberton")
-        self.assertEqual(d['my_number'], 89)
-
-    def test_to_dict_values(self):
-        """test that values in dict returned from to_dict are correct"""
-        t_format = "%Y-%m-%dT%H:%M:%S.%f"
-        bm = BaseModel()
-        new_d = bm.to_dict()
-        self.assertEqual(new_d["__class__"], "BaseModel")
-        self.assertEqual(type(new_d["created_at"]), str)
-        self.assertEqual(type(new_d["updated_at"]), str)
-        self.assertEqual(new_d["created_at"], bm.created_at.strftime(t_format))
-        self.assertEqual(new_d["updated_at"], bm.updated_at.strftime(t_format))
-
     def test_str(self):
         """test that the str method has the correct output"""
         inst = BaseModel()
@@ -158,3 +130,98 @@ class TestBaseModel(unittest.TestCase):
         self.assertEqual(old_created_at, new_created_at)
         self.assertTrue(mock_storage.new.called)
         self.assertTrue(mock_storage.save.called)
+
+
+class TestBaseModel_to_dict(unittest.TestCase):
+    """Tests for BaseModel.to_dict method"""
+
+    def test_to_dict_type(self):
+        """Test that to_dict returns a dictionary"""
+        bm = BaseModel()
+        self.assertIsInstance(bm.to_dict(), dict)
+
+    def test_to_dict_keys(self):
+        """Test that to_dict contains all expected keys"""
+        bm = BaseModel()
+        expected_keys = ['id', 'created_at', 'updated_at', '__class__']
+        self.assertCountEqual(bm.to_dict().keys(), expected_keys)
+
+    def test_to_dict_values(self):
+        """Test that to_dict contains correct values"""
+        bm = BaseModel()
+        bm_dict = bm.to_dict()
+        self.assertEqual(bm_dict['id'], bm.id)
+        self.assertEqual(bm_dict['created_at'], bm.created_at.isoformat())
+        self.assertEqual(bm_dict['updated_at'], bm.updated_at.isoformat())
+        self.assertEqual(bm_dict['__class__'], 'BaseModel')
+
+    def test_to_dict_datetime_format(self):
+        """Test that datetime objects are formatted correctly"""
+        bm = BaseModel()
+        bm_dict = bm.to_dict()
+        self.assertIsInstance(bm_dict['created_at'], str)
+        self.assertIsInstance(bm_dict['updated_at'], str)
+
+    def test_to_dict_sa_instance_state(self):
+        """Test that _sa_instance_state is removed from the dictionary"""
+        bm = BaseModel()
+        bm.__dict__['_sa_instance_state'] = 'some_value'
+        bm_dict = bm.to_dict()
+        self.assertNotIn('_sa_instance_state', bm_dict)
+
+    def test_to_dict_password(self):
+        """Test that password is removed from the
+        dictionary if storage_t is 'db'
+        """
+        bm = BaseModel()
+        bm.__dict__['password'] = 'secret'
+        models.storage_t = 'db'
+        bm_dict = bm.to_dict()
+        self.assertNotIn('password', bm_dict)
+
+
+class TestBaseModel_delete(unittest.TestCase):
+    """Tests for BaseModel.delete method"""
+
+    def test_delete(self):
+        """Test that delete method removes the instance from storage"""
+        bm = BaseModel()
+        bm_id = bm.id
+        bm.delete()
+        self.assertIsNone(models.storage.all().get(bm_id))
+
+    def test_delete_nonexistent_instance(self):
+        """Test that delete method does not raise an error
+        for non-existent instance
+        """
+        bm = BaseModel()
+        bm_id = bm.id
+        bm.delete()
+        bm.delete()  # Should not raise an error
+
+    @mock.patch('models.storage')
+    def test_delete_calls_storage_delete(self, mock_storage):
+        """Test that delete method calls storage.delete"""
+        bm = BaseModel()
+        bm.delete()
+        self.assertTrue(mock_storage.delete.called)
+
+    def test_delete_with_password(self):
+        """Test that delete method removes the instance
+        with password attribute
+        """
+        bm = BaseModel()
+        bm.password = 'secret'
+        bm_id = bm.id
+        bm.delete()
+        self.assertIsNone(models.storage.all().get(bm_id))
+
+    def test_delete_with_sa_instance_state(self):
+        """Test that delete method removes the instance
+        with _sa_instance_state attribute
+        """
+        bm = BaseModel()
+        bm._sa_instance_state = 'some_value'
+        bm_id = bm.id
+        bm.delete()
+        self.assertIsNone(models.storage.all().get(bm_id))
