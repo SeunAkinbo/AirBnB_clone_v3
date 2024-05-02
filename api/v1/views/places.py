@@ -155,10 +155,12 @@ def search_places():
 
     if amenities:
         all_amenities = storage.all(Amenity).values()
-        amenity_objs = [amenity for amenity in all_amenities if amenity.id in amenities]
+        amenity_objs = [amenity for amenity in all_amenities
+                        if amenity.id in amenities]
         for place in filtered_places.copy():
             if not all(amenity in place.amenities for amenity in amenity_objs):
                 filtered_places.remove(place)
 
-    places = [place.to_dict(exclude=['amenities']) for place in filtered_places]
+    places = [place.to_dict(exclude=['amenities'])
+              for place in filtered_places]
     return jsonify(places)
