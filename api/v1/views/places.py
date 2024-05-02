@@ -137,7 +137,7 @@ def search_places():
         list_places = [place.to_dict() for place in places]
         return jsonify(list_places)
     list_places = []
-    
+
     if states:
         states_obj = [storage.get(State, state_id) for state_id in states]
         for state in states_obj:
@@ -156,7 +156,8 @@ def search_places():
     if amenities:
         if not list_places:
             all_places = storage.all(Place).values()
-            amenities_obj = [storage.get(Amenity, amenity_id) for amenity_id in amenities]
+            amenities_obj = [storage.get(Amenity, amenity_id)
+                             for amenity_id in amenities]
             for place in all_places:
                 if all([am in place.amenities for am in amenities_obj]):
                     list_places.append(place)
@@ -166,4 +167,3 @@ def search_places():
         plc_dict.pop('amenities', None)
         places.append(plc_dict)
     return jsonify(places)
-            
