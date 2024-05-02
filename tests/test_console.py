@@ -143,7 +143,8 @@ class TestHBNBCommandUpdateMethod(unittest.TestCase):
         model.save()
         with patch('sys.stdout', new=StringIO()) as f:
             self.console.onecmd(f'update BaseModel {model.id}')
-            self.assertEqual('** attribute name missing **', f.getvalue().strip())
+            self.assertEqual('** attribute name missing **',
+                             f.getvalue().strip())
 
     def test_update_no_value(self):
         """Test for update with no value"""
@@ -166,7 +167,8 @@ class TestHBNBCommandUpdateMethod(unittest.TestCase):
         model = Place()
         model.save()
         with patch('sys.stdout', new=StringIO()) as f:
-            self.console.onecmd(f'update Place {model.id} number_rooms invalid')
+            self.console.onecmd(f'update Place {model.id}\
+                                 number_rooms invalid')
             self.assertEqual(model.number_rooms, 0)
 
     def test_update_valid_float(self):
@@ -292,7 +294,8 @@ class TestKeyValueParser(unittest.TestCase):
     def test_multiple_args(self):
         args = ["key1=value1", "key2=value2", "key3=value3"]
         result = self.console._key_value_parser(args)
-        self.assertEqual(result, {"key1": "value1", "key2": "value2", "key3": "value3"})
+        self.assertEqual(result, {"key1": "value1", "key2": "value2",
+                                  "key3": "value3"})
 
     def test_arg_with_quoted_value(self):
         args = ["key=\"value with spaces\""]
